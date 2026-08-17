@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d0d0d">
+    <title>XRay Monitor</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">XRay Core</p>
+          <h1>Статус серверов</h1>
+        </div>
+        <div class="updated" id="last-updated">Нет проверок</div>
+      </header>
+
+      <section class="summary" aria-label="Общая статистика">
+        <div class="summary-main"><span id="online-count">--</span> из <span id="total-count">--</span> серверов онлайн</div>
+        <div class="summary-latency">Средний отклик: <strong id="average-latency">--</strong></div>
+      </section>
+
+      <section class="notice hidden" id="subscription-notice" role="status"></section>
+      <section class="server-grid" id="server-grid" aria-live="polite"></section>
+      <section class="empty-state hidden" id="empty-state">Серверы пока не найдены</section>
+    </main>
+
+    <dialog id="history-dialog">
+      <article class="history-panel">
+        <header>
+          <div>
+            <p class="eyebrow">История доступности</p>
+            <h2 id="history-title"></h2>
+          </div>
+          <button class="icon-button" id="close-dialog" aria-label="Закрыть">×</button>
+        </header>
+        <div class="range-buttons" aria-label="Период истории">
+          <button data-range="24h" class="selected">24ч</button>
+          <button data-range="7d">7д</button>
+          <button data-range="30d">30д</button>
+        </div>
+        <div class="history-metric"><strong id="history-uptime">--</strong> uptime за период</div>
+        <div class="history-chart" id="history-chart"></div>
+        <p class="history-meta" id="history-meta"></p>
+      </article>
+    </dialog>
+    <template id="server-template">
+      <article class="server-card">
+        <button class="card-button">
+          <div class="card-heading">
+            <span class="status-dot"></span>
+            <h2 class="server-name"></h2>
+            <span class="status-label"></span>
+          </div>
+          <p class="endpoint"></p>
+          <div class="metric-row">
+            <div><span>Отклик</span><strong class="latency"></strong></div>
+            <div><span>Uptime 24ч</span><strong class="uptime"></strong></div>
+          </div>
+          <p class="checked-at"></p>
+        </button>
+      </article>
+    </template>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
