@@ -20,17 +20,45 @@
    PORT=3000
    ```
 
-3. Направьте DNS-записи `A` и, при необходимости, `AAAA` домена на IP сервера. Порты `80` и `443` должны быть доступны извне: Caddy использует их для выпуска и продления сертификата Let's Encrypt.
+3. Направьте DNS-записи `A` и, при необходимости, `AAAA` домена на IP сервера. Порты `80` и `443` должны быть доступны извне и не должны использоваться другим reverse proxy.
 
-4. Запустите сервис:
+4. Запустите приложение. Оно будет доступно только локально на `127.0.0.1:3000`:
 
    ```sh
    docker compose up -d --build
    ```
 
-5. Откройте `https://ваш-домен`. Первые статусы появятся после начального скачивания подписки и TCP-проверки.
+5. Установите Caddy как системный пакет, если его ещё нет:
 
-SQLite хранится в именованном томе `monitor-data`, поэтому история не пропадает после пересоздания контейнера. Для просмотра журналов используйте `docker compose logs -f app`.
+   ```sh
+   sudo apt update
+   sudo apt install -y caddy
+   ```
+
+6. Отключите стандартный unit пакета Caddy: для сайта используется отдельный unit из этого проекта.
+
+   ```sh
+   sudo systemctl disable --now caddy
+   ```
+
+7. Установите systemd-unit из репозитория. Команды рассчитаны на путь `/root/uptime`, в котором находится проект:
+
+   ```sh
+   sudo install -d -m 700 /root/uptime/caddy/data /root/uptime/caddy/config
+   sudo install -m 644 /root/uptime/caddy/xray-uptime-caddy.service /etc/systemd/system/xray-uptime-caddy.service
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now xray-uptime-caddy
+   ```
+
+8. Проверьте выпуск сертификата и откройте `https://ваш-домен`:
+
+   ```sh
+   sudo journalctl -u xray-uptime-caddy -f
+   ```
+
+SQLite хранится в именованном томе `monitor-data`, поэтому история не пропадает после пересоздания контейнера. Для просмотра журналов приложения используйте `docker compose logs -f app`.
+
+Конфигурация системного Caddy находится в `caddy/Caddyfile`, а unit - в `caddy/xray-uptime-caddy.service`. Caddy читает `DOMAIN` и `PORT` из `/root/uptime/.env`; если проект находится в другом месте, замените `/root/uptime` на фактический путь в unit-файле до его установки.
 
 ## Переменные окружения
 

@@ -7,22 +7,8 @@ services:
       DATABASE_PATH: /app/data/monitor.db
     volumes:
       - monitor-data:/app/data
-
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - app
-    env_file: .env
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
+      - "127.0.0.1:${PORT:-3000}:${PORT:-3000}"
 
 volumes:
   monitor-data:
-  caddy-data:
-  caddy-config:
