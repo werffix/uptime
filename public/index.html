@@ -11,10 +11,12 @@
     <main class="shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">XRay Core</p>
-          <h1>Статус серверов</h1>
+          <h1>q1 vpn - uptime</h1>
         </div>
-        <div class="updated" id="last-updated">Нет проверок</div>
+        <div class="check-times">
+          <div class="updated" id="last-updated">Последняя проверка: нет данных</div>
+          <div class="updated" id="next-check">Следующая проверка: --</div>
+        </div>
       </header>
 
       <section class="summary" aria-label="Общая статистика">
@@ -54,7 +56,6 @@
             <h2 class="server-name"></h2>
             <span class="status-label"></span>
           </div>
-          <p class="endpoint"></p>
           <div class="metric-row">
             <div><span>Отклик</span><strong class="latency"></strong></div>
             <div><span>Uptime 24ч</span><strong class="uptime"></strong></div>

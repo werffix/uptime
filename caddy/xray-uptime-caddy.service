@@ -8,10 +8,10 @@ Type=notify
 User=root
 Group=root
 WorkingDirectory=/root/uptime/caddy
-EnvironmentFile=/root/uptime/.env
+EnvironmentFile=/root/uptime/caddy/.env
 Environment=XDG_DATA_HOME=/root/uptime/caddy/data
 Environment=XDG_CONFIG_HOME=/root/uptime/caddy/config
-ExecStart=/usr/bin/caddy run --environ --config /root/uptime/caddy/Caddyfile
+ExecStart=/usr/bin/caddy run --config /root/uptime/caddy/Caddyfile
 ExecReload=/usr/bin/caddy reload --config /root/uptime/caddy/Caddyfile
 TimeoutStopSec=5s
 LimitNOFILE=1048576

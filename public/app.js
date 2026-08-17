@@ -3,6 +3,8 @@ const template = document.querySelector('#server-template');
 const dialog = document.querySelector('#history-dialog');
 let selectedServer = null;
 let selectedRange = '24h';
+let nextCheckAt = null;
+let checkIntervalSeconds = 60;
 
 const formatter = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'short', timeStyle: 'short' });
 function text(id, value) { document.querySelector(id).textContent = value; }
@@ -17,7 +19,6 @@ function makeCard(server) {
   card.classList.add(online ? 'online' : 'offline');
   node.querySelector('.server-name').textContent = server.name;
   node.querySelector('.status-label').textContent = online ? 'онлайн' : 'офлайн';
-  node.querySelector('.endpoint').textContent = `${server.protocol} · ${server.host}:${server.port}`;
   node.querySelector('.latency').textContent = latency(server.latencyMs);
   node.querySelector('.uptime').textContent = `${server.uptime24h}%`;
   node.querySelector('.checked-at').textContent = `Проверено: ${timestamp(server.lastCheckedAt)}`;
@@ -35,6 +36,8 @@ async function updateDashboard() {
     text('#total-count', summary.total);
     text('#average-latency', latency(summary.averageLatencyMs));
     text('#last-updated', `Последняя проверка: ${timestamp(summary.lastCheckAt)}`);
+    nextCheckAt = summary.nextCheckAt ? new Date(summary.nextCheckAt).getTime() : null;
+    checkIntervalSeconds = summary.checkIntervalSeconds || 60;
     const notice = document.querySelector('#subscription-notice');
     notice.classList.toggle('hidden', !data.subscriptionError);
     notice.textContent = data.subscriptionError ? `Не удалось обновить подписку: ${data.subscriptionError}. Показан последний известный список.` : '';
@@ -42,6 +45,16 @@ async function updateDashboard() {
     document.querySelector('#empty-state').classList.toggle('hidden', data.servers.length > 0);
   } catch {
     text('#last-updated', 'Связь с сервисом потеряна');
+  }
+}
+
+function updateCountdown() {
+  if (!nextCheckAt) return text('#next-check', 'Следующая проверка: --');
+  const seconds = Math.max(0, Math.ceil((nextCheckAt - Date.now()) / 1000));
+  text('#next-check', `Следующая проверка через ${seconds} сек`);
+  if (seconds === 0) {
+    nextCheckAt = Date.now() + checkIntervalSeconds * 1000;
+    updateDashboard();
   }
 }
 
@@ -83,4 +96,6 @@ document.querySelectorAll('[data-range]').forEach((button) => button.addEventLis
   await loadHistory();
 }));
 updateDashboard();
+updateCountdown();
 setInterval(updateDashboard, 15_000);
+setInterval(updateCountdown, 1000);
